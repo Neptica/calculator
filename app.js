@@ -17,6 +17,7 @@ let operand2 = null;
 let opcode = null;
 
 function updateDisplay() {
+  this.focus();
   const input = this.textContent;
   const operatorInput = operators.includes(input);
 
@@ -28,7 +29,8 @@ function updateDisplay() {
   } else if ((input === "Enter" || operatorInput) && operand1 && opcode) {
     if (!lastCharWasOp) operand2 = display.textContent;
     const answer = doMath(operand1, operand2, opcode);
-    if (!isNaN(answer)) display.textContent = answer;
+    if (!isNaN(answer) && Number.isFinite(answer)) display.textContent = answer;
+    else if (!Number.isFinite(answer)) display.textContent = "Divide By Zero";
     else display.textContent = "Error";
     keepExistingText = false;
     operand1 = display.textContent;
@@ -83,7 +85,31 @@ function doMath(op1, op2, opcode) {
   return answer;
 }
 
+const keyboardEquivalent = [
+  "Backspace",
+  "_",
+  "^",
+  "/",
+  "7",
+  "8",
+  "9",
+  "*",
+  "4",
+  "5",
+  "6",
+  "-",
+  "1",
+  "2",
+  "3",
+  "+",
+  "0",
+  ".",
+  "",
+  "Enter",
+];
+
 let divs = [];
+let i = 0;
 
 for (const row of controls) {
   let rowDoc = document.createElement("div");
@@ -94,7 +120,16 @@ for (const row of controls) {
     btn.textContent = ctrl;
     btn.addEventListener("click", updateDisplay);
     rowDoc.appendChild(btn);
-    divs.push(btn);
+    divs.push([keyboardEquivalent[i++], btn]);
   }
   buttons.appendChild(rowDoc);
 }
+
+for (const btn of divs) console.log(btn);
+
+document.addEventListener("keydown", (event) => {
+  for (const btn of divs) {
+    if (btn[0] === event.key) btn[1].click();
+  }
+  console.log(event.key);
+});
