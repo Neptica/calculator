@@ -13,7 +13,6 @@ const display = document.getElementById("display__text");
 let keepExistingText = false;
 let lastCharWasOp = false;
 
-// TODO: Work with negative numbers
 function updateDisplay() {
   const input = this.textContent;
   const alreadyHasOperator = operators.some((item) =>
@@ -22,13 +21,17 @@ function updateDisplay() {
   const operatorInput = operators.includes(input);
 
   if (input == "Enter" || (alreadyHasOperator && operatorInput)) {
-    if (lastCharWasOp && operatorInput)
+    if (lastCharWasOp && operatorInput) {
       display.textContent = display.textContent.slice(0, -1) + input;
-    else if (operatorInput) {
-      display.textContent = "Error";
-      keepExistingText = false;
-    } else {
+    } else if (!lastCharWasOp) {
       let [operand1, operand2, opcode] = splitString(display.textContent);
+      display.textContent = doMath(operand1, operand2, opcode);
+      if (operatorInput) {
+        display.textContent += input;
+        lastCharWasOp = true;
+      } else {
+        keepExistingText = false;
+      }
     }
   } else if (input === "Clear") {
     display.textContent = "";
@@ -48,29 +51,30 @@ function updateDisplay() {
   }
 }
 
-function splitString(string) {}
+// TODO: Split strings
+function splitString(string) {
+  return ["3", "2", "+"];
+}
 
-function doMath(string) {
-  const op = operators.filter((item) => string.includes(item))[0];
-  const loc = string.indexOf(op);
-  const operand1 = Number(string.slice(0, loc));
-  const operand2 = Number(string.slice(loc + 1));
+function doMath(op1, op2, opcode) {
   let answer = 0;
-  switch (op) {
+  op1 = Number(op1);
+  op2 = Number(op2);
+  switch (opcode) {
     case "+":
-      answer = operand1 + operand2;
+      answer = op1 + op2;
       break;
     case "-":
-      answer = operand1 - operand2;
+      answer = op1 - op2;
       break;
     case "*":
-      answer = operand1 * operand2;
+      answer = op1 * op2;
       break;
     case "/":
-      answer = operand1 / operand2;
+      answer = op1 / op2;
       break;
     case "^":
-      answer = operand1 ** operand2;
+      answer = op1 ** op2;
       break;
   }
   return answer;
