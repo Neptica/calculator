@@ -10,31 +10,45 @@ const operators = ["^", "/", "*", "-", "+"];
 
 const buttons = document.getElementById("button__container");
 const display = document.getElementById("display__text");
-let newString = true;
+let keepExistingText = false;
+let lastCharWasOp = false;
 
 // TODO: Work with negative numbers
 function updateDisplay() {
   const input = this.textContent;
-  if (input == "Enter") {
-    display.textContent = doMath(display.textContent);
-    newString = true;
+  const alreadyHasOperator = operators.some((item) =>
+    display.textContent.includes(item),
+  );
+  const operatorInput = operators.includes(input);
+
+  if (input == "Enter" || (alreadyHasOperator && operatorInput)) {
+    if (lastCharWasOp && operatorInput)
+      display.textContent = display.textContent.slice(0, -1) + input;
+    else if (operatorInput) {
+      display.textContent = "Error";
+      keepExistingText = false;
+    } else {
+      let [operand1, operand2, opcode] = splitString(display.textContent);
+    }
   } else if (input === "Clear") {
     display.textContent = "";
-    newString = false;
-  } else if (
-    operators.includes(input) &&
-    operators.some((item) => display.textContent.includes(item))
-  ) {
-    display.textContent = doMath(display.textContent) + input;
-    newString = false;
-  } else if (newString && !operators.includes(input)) {
-    display.textContent = input;
-    newString = false;
+    keepExistingText = false;
+    lastCharWasOp = false;
   } else {
-    display.textContent += input;
-    newString = false;
+    if (keepExistingText) {
+      if (operatorInput) lastCharWasOp = true;
+      else lastCharWasOp = false;
+      display.textContent += input;
+      keepExistingText = true;
+    } else if (!operatorInput) {
+      display.textContent = input;
+      keepExistingText = true;
+      lastCharWasOp = false;
+    }
   }
 }
+
+function splitString(string) {}
 
 function doMath(string) {
   const op = operators.filter((item) => string.includes(item))[0];
