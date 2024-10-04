@@ -1,59 +1,59 @@
 const controls = [
-  ["Clear", "", "^", "/"],
+  ["Clear", "+/-", "^", "/"],
   ["7", "8", "9", "*"],
   ["4", "5", "6", "-"],
   ["1", "2", "3", "+"],
-  ["0", ".", "(-)", "Enter"],
+  ["0", ".", "", "Enter"],
 ];
 
 const operators = ["^", "/", "*", "-", "+"];
 
 const buttons = document.getElementById("button__container");
 const display = document.getElementById("display__text");
-let keepExistingText = false;
+let keepExistingText = true;
 let lastCharWasOp = false;
+let operand1 = null;
+let operand2 = null;
+let opcode = null;
 
 function updateDisplay() {
   const input = this.textContent;
-  const alreadyHasOperator = operators.some((item) =>
-    display.textContent.includes(item),
-  );
   const operatorInput = operators.includes(input);
 
-  if (input == "Enter" || (alreadyHasOperator && operatorInput)) {
-    if (lastCharWasOp && operatorInput) {
-      display.textContent = display.textContent.slice(0, -1) + input;
-    } else if (!lastCharWasOp) {
-      let [operand1, operand2, opcode] = splitString(display.textContent);
-      display.textContent = doMath(operand1, operand2, opcode);
-      if (operatorInput) {
-        display.textContent += input;
-        lastCharWasOp = true;
-      } else {
-        keepExistingText = false;
-      }
-    }
+  if (input === "+/-") {
+    display.textContent = Number(display.textContent) * -1;
+    keepExistingText = true;
+  } else if (operatorInput && lastCharWasOp) {
+    opcode = input;
+  } else if ((input === "Enter" || operatorInput) && operand1 && opcode) {
+    operand2 = display.textContent;
+    display.textContent = doMath(operand1, operand2, opcode);
+    keepExistingText = false;
+    operand1 = display.textContent;
+    operand2 = null;
+    if (operatorInput) opcode = input;
+    else opcode = null;
   } else if (input === "Clear") {
     display.textContent = "";
-    keepExistingText = false;
+    operand1 = null;
+    opcode = null;
+    keepExistingText = true;
     lastCharWasOp = false;
-  } else {
-    if (keepExistingText) {
-      if (operatorInput) lastCharWasOp = true;
-      else lastCharWasOp = false;
+  } else if (operatorInput || input !== "Enter") {
+    if (operatorInput) {
+      operand1 = display.textContent;
+      opcode = input;
+      keepExistingText = false;
+      lastCharWasOp = true;
+    } else if (keepExistingText) {
       display.textContent += input;
-      keepExistingText = true;
-    } else if (!operatorInput) {
+      lastCharWasOp = false;
+    } else {
       display.textContent = input;
       keepExistingText = true;
       lastCharWasOp = false;
     }
   }
-}
-
-// TODO: Split strings
-function splitString(string) {
-  return ["3", "2", "+"];
 }
 
 function doMath(op1, op2, opcode) {
@@ -88,6 +88,7 @@ for (const row of controls) {
     btn.classList.add("button");
     btn.textContent = ctrl;
     btn.addEventListener("click", updateDisplay);
+    btn.addEventListener("keydown", (event) => console.log(event.key));
     rowDoc.appendChild(btn);
   }
   buttons.appendChild(rowDoc);
