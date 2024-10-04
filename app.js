@@ -26,13 +26,14 @@ function updateDisplay() {
   } else if (operatorInput && lastCharWasOp) {
     opcode = input;
   } else if ((input === "Enter" || operatorInput) && operand1 && opcode) {
-    operand2 = display.textContent;
+    if (!lastCharWasOp) operand2 = display.textContent;
     display.textContent = doMath(operand1, operand2, opcode);
     keepExistingText = false;
     operand1 = display.textContent;
-    operand2 = null;
-    if (operatorInput) opcode = input;
-    else opcode = null;
+    if (operatorInput) {
+      opcode = input;
+      lastCharWasOp = true;
+    } else opcode = null;
   } else if (input === "Clear") {
     display.textContent = "";
     operand1 = null;
@@ -80,6 +81,8 @@ function doMath(op1, op2, opcode) {
   return answer;
 }
 
+let divs = [];
+
 for (const row of controls) {
   let rowDoc = document.createElement("div");
   rowDoc.classList.add("row");
@@ -88,8 +91,8 @@ for (const row of controls) {
     btn.classList.add("button");
     btn.textContent = ctrl;
     btn.addEventListener("click", updateDisplay);
-    btn.addEventListener("keydown", (event) => console.log(event.key));
     rowDoc.appendChild(btn);
+    divs.push(btn);
   }
   buttons.appendChild(rowDoc);
 }
