@@ -27,7 +27,9 @@ function updateDisplay() {
     opcode = input;
   } else if ((input === "Enter" || operatorInput) && operand1 && opcode) {
     if (!lastCharWasOp) operand2 = display.textContent;
-    display.textContent = doMath(operand1, operand2, opcode);
+    const answer = doMath(operand1, operand2, opcode);
+    if (!isNaN(answer)) display.textContent = answer;
+    else display.textContent = "Error";
     keepExistingText = false;
     operand1 = display.textContent;
     if (operatorInput) {
@@ -41,12 +43,12 @@ function updateDisplay() {
     keepExistingText = true;
     lastCharWasOp = false;
   } else if (operatorInput || input !== "Enter") {
-    if (operatorInput) {
+    if (operatorInput && display.textContent != "Error") {
       operand1 = display.textContent;
       opcode = input;
       keepExistingText = false;
       lastCharWasOp = true;
-    } else if (keepExistingText) {
+    } else if (keepExistingText && display.textContent != "Error") {
       display.textContent += input;
       lastCharWasOp = false;
     } else {
