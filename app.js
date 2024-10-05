@@ -83,7 +83,8 @@ function updateDisplay() {
       display.textContent != "Error" &&
       !operatorInput
     ) {
-      display.textContent += input;
+      if (!(display.textContent.includes(".") && input == "."))
+        display.textContent += input;
       lastCharWasOp = false;
     } else if (!operatorInput) {
       colorOp("white"); // no button will match white
@@ -103,7 +104,7 @@ function doMath(op1, op2, opcode) {
       answer = op1 + op2;
       break;
     case "-":
-      answer = (op1 * 1000000 - op2 * 1000000) / 1000000;
+      answer = (op1 * 1000 - op2 * 1000) / 1000;
       break;
     case "*":
       answer = op1 * op2;
