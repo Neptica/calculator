@@ -13,4 +13,4 @@ What calc can do:
   - call you beautiful
 
 ## Check it out here
-You can chcek out this beautiful thingy by this link [link]github.com/Neptica/calculator/index.html
+You can chcek out this beautiful thingy by this link [link](https://github.com/Neptica/calculator/index.html).
