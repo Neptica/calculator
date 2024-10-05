@@ -25,35 +25,53 @@ function updateDisplay() {
     display.textContent = Number(display.textContent) * -1;
     keepExistingText = true;
   } else if (operatorInput && lastCharWasOp) {
+    if (operatorInput) colorOp(input);
     opcode = input;
   } else if ((input === "Enter" || operatorInput) && operand1 && opcode) {
-    if (!lastCharWasOp) operand2 = display.textContent;
-    const answer = doMath(operand1, operand2, opcode);
-    if (!isNaN(answer) && Number.isFinite(answer)) display.textContent = answer;
-    else if (!Number.isFinite(answer)) display.textContent = "Divide By Zero";
-    else display.textContent = "Error";
-    keepExistingText = false;
-    operand1 = display.textContent;
+    if (!lastCharWasOp) {
+      colorOp("white"); // no button will match white
+      operand2 = display.textContent;
+      const answer = doMath(operand1, operand2, opcode);
+      if (!isNaN(answer) && Number.isFinite(answer))
+        display.textContent = answer;
+      else if (!Number.isFinite(answer)) display.textContent = "Divide By Zero";
+      else display.textContent = "Error";
+      keepExistingText = false;
+      operand1 = display.textContent;
+    }
     if (operatorInput) {
+      colorOp(input);
       opcode = input;
       lastCharWasOp = true;
-    } else opcode = null;
+    }
   } else if (input === "Clear") {
+    colorOp("white"); // no button will match white
     display.textContent = "";
     operand1 = null;
+    operand2 = null;
     opcode = null;
     keepExistingText = true;
     lastCharWasOp = false;
   } else if (operatorInput || input !== "Enter") {
-    if (operatorInput && display.textContent != "Error") {
+    if (
+      operatorInput &&
+      display.textContent !== "Error" &&
+      display.textContent !== ""
+    ) {
+      colorOp(input);
       operand1 = display.textContent;
       opcode = input;
       keepExistingText = false;
       lastCharWasOp = true;
-    } else if (keepExistingText && display.textContent != "Error") {
+    } else if (
+      keepExistingText &&
+      display.textContent != "Error" &&
+      !operatorInput
+    ) {
       display.textContent += input;
       lastCharWasOp = false;
-    } else {
+    } else if (!operatorInput) {
+      colorOp("white"); // no button will match white
       display.textContent = input;
       keepExistingText = true;
       lastCharWasOp = false;
@@ -125,11 +143,16 @@ for (const row of controls) {
   buttons.appendChild(rowDoc);
 }
 
-for (const btn of divs) console.log(btn);
-
 document.addEventListener("keydown", (event) => {
   for (const btn of divs) {
     if (btn[0] === event.key) btn[1].click();
   }
   console.log(event.key);
 });
+
+function colorOp(content) {
+  for (let btn of divs) {
+    btn[1].style.backgroundColor = "white";
+    if (btn[1].textContent === content) btn[1].style.backgroundColor = "orange";
+  }
+}
