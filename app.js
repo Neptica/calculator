@@ -1,9 +1,23 @@
 const controls = [
-  ["Clear", "+/-", "^", "/"],
-  ["7", "8", "9", "*"],
-  ["4", "5", "6", "-"],
-  ["1", "2", "3", "+"],
-  ["0", ".", "", "Enter"],
+  "Clear",
+  "+/-",
+  "^",
+  "/",
+  "7",
+  "8",
+  "9",
+  "*",
+  "4",
+  "5",
+  "6",
+  "-",
+  "1",
+  "2",
+  "3",
+  "+",
+  "0",
+  ".",
+  "Enter",
 ];
 
 const operators = ["^", "/", "*", "-", "+"];
@@ -38,6 +52,7 @@ function updateDisplay() {
       else display.textContent = "Error";
       keepExistingText = false;
       operand1 = display.textContent;
+      opcode = null;
     }
     if (operatorInput) {
       colorOp(input);
@@ -88,7 +103,7 @@ function doMath(op1, op2, opcode) {
       answer = op1 + op2;
       break;
     case "-":
-      answer = op1 - op2;
+      answer = (op1 * 1000000 - op2 * 1000000) / 1000000;
       break;
     case "*":
       answer = op1 * op2;
@@ -129,18 +144,15 @@ const keyboardEquivalent = [
 let divs = [];
 let i = 0;
 
-for (const row of controls) {
-  let rowDoc = document.createElement("div");
-  rowDoc.classList.add("row");
-  for (const ctrl of row) {
-    let btn = document.createElement("button");
-    btn.classList.add("button");
-    btn.textContent = ctrl;
-    btn.addEventListener("click", updateDisplay);
-    rowDoc.appendChild(btn);
-    divs.push([keyboardEquivalent[i++], btn]);
-  }
-  buttons.appendChild(rowDoc);
+for (const ctrl of controls) {
+  let btn = document.createElement("button");
+  btn.classList.add("button");
+  btn.textContent = ctrl;
+  btn.addEventListener("click", updateDisplay);
+  if (btn.textContent === "0") btn.style.cssText = "flex: 50%";
+  else btn.style.cssText = "flex: 25%";
+  buttons.appendChild(btn);
+  divs.push([keyboardEquivalent[i++], btn]);
 }
 
 document.addEventListener("keydown", (event) => {
